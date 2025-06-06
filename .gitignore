@@ -1,0 +1,7 @@
+#executables
+*.exe
+
+#libraries
+lib/
+include/
+*.dll
