@@ -1,5 +1,6 @@
 #executables
 *.exe
+main
 
 #libraries
 lib/
