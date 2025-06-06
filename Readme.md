@@ -28,5 +28,6 @@ and since makefile is crossplatform, just compile with: make -f Makefile
 and run your executable with: ./main (executable name)
 
 
---NOTE
+-----
+NOTE
 you can change your executable program name, your cpp files directory (src) and the path for lib and include sdl2 files (for windows) in the Makefile. 
