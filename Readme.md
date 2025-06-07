@@ -31,4 +31,5 @@ and run your executable with: ./main (executable name)
 -----
 NOTE
 
-you can change your executable program name, your cpp files directory (src) and the path for lib and include sdl2 files (for windows) in the Makefile. 
+you can change your executable program name, your cpp files directory (src) and the path for lib and include sdl2 files (for windows) in the Makefile.
+If you, for example, in windows, want to move the executable path to (root dir)/output/main then set path as output/main and (IMPORTANT) move the two .dll files from your too dir to this new folder where your executable will be palced (it needs the two .dll files to run!)

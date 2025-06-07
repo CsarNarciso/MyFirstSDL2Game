@@ -4,7 +4,7 @@ UNAME := $(shell uname)
 # Compiler and source files
 CXX := g++
 SRC := $(wildcard src/*.cpp)
-OUT := main
+OUT := output/main
 
 
 # Platform-specific flags
