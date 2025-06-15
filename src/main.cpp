@@ -1,6 +1,8 @@
 #include <SDL.h>
 #include <iostream>
 
+#include <render.hpp>
+
 //Create pointers (variable declaration?)
 SDL_Window* window;
 SDL_Surface* winSurface;
@@ -41,14 +43,8 @@ bool init() {
 		return false;
 	}
 	
-	//Create window
-	window = SDL_CreateWindow("title", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN);
-	
-	//If creating windows failed
-	if(!window) {
-		std::cout << "Error creating window: " << SDL_GetError() << std::endl;
-		return false;
-	}
+	//Create window using OPP!
+	RenderWindow window("title", 640, 480);
 	
 	//Get surface from window
 	winSurface = SDL_GetWindowSurface(window);
