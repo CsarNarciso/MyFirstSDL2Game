@@ -22,15 +22,34 @@ class Render
 	    }
     }
 
-    void render(SDL_Texture* texture)
+    SDL_Texture* loadTexture(const char* p_filePath)
     {
-        //Clear screen
-        SDL_RenderClear(render);
+        SDL_Texture* texture = NULL;
+        texture = IMG_LoadTexture(renderer, p_filePath);
 
-        //Render texture to screen
-        SDL_RenderCopy(render, texture, NULL, NULL);
-        
-        //Update screen
-        SDL_RenderPresent(render);    
+        if(texture == NULL)
+            std::cout << "Error loading texture: " << SDL_GetError() << std::endl;
+
+        return texture;
+    }
+
+    void clear()
+    {
+        SDL_RenderClear(renderer);
+    }
+
+    void render(SDL_Texture* p_text)
+    {
+        SDL_RenderCopy(renderer, p_text, NULL, NULL);
+    }
+
+    void display()
+    {
+        SDL_Present(renderer);
+    }
+
+    void RenderWindow::cleanUp()
+    {
+        SDL_DestroyWindow(window);
     }
 }
