@@ -1,7 +1,8 @@
-#include <SDL.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <iostream>
 
-#include <render.hpp>
+#include <../include/RenderWindow.hpp>
 
 
 int main(int argc, char** args) {
@@ -13,7 +14,7 @@ int main(int argc, char** args) {
 		return 1;
 	}
 
-	if ( SDL_Init(SDL_INIT_PNG) < 0 ) {
+	if ( SDL_Init(IMG_INIT_PNG) < 0 ) {
 		std::cout << "Error initializing SDL png: " << SDL_GetError() << std::endl;
 		return 1;
 	}
@@ -22,7 +23,7 @@ int main(int argc, char** args) {
 	RenderWindow window("title", 640, 480);
 
 	//Create a texture
-	SDL_Texture grassTexture = window.loadTexture("media/ground_grass_1.png");
+	SDL_Texture* grassTexture = window.loadTexture("media/ground_grass_1.png");
 
 	//game loop
 	bool gameRunning = true;

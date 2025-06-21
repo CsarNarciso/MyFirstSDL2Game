@@ -1,55 +1,55 @@
-#include "RenderWindow.hpp"
+#include <iostream>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
-class Render
+#include "../include/RenderWindow.hpp"
+
+RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
+    :window(NULL), renderer(NULL) 
 {
-    RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
-        :window(NULL), renderer(NULL) 
-    {
-       //Init window and renderer
-       window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, p_w, p_h, SDL_WINDOW_SHOWN);
+    //Init window and renderer
+    window = SDL_CreateWindow(p_title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, p_w, p_h, SDL_WINDOW_SHOWN);
 
-        //If creating window failed
-	    if(!window) {
-		    std::cout << "Error creating window: " << SDL_GetError() << std::endl;
-	    }
-
-       //-1 means: use the device graphic card if possible, if not, then the GPU
-       renderer = SDL_CreateWindow(window, -1, SDL_RENDERER_ACCELERATED);
-
-       //If creating renderer failed
-	    if(!renderer) {
-		    std::cout << "Error creating renderer: " << SDL_GetError() << std::endl;
-	    }
+    //If creating window failed
+    if(!window) {
+        std::cout << "Error creating window: " << SDL_GetError() << std::endl;
     }
 
-    SDL_Texture* loadTexture(const char* p_filePath)
-    {
-        SDL_Texture* texture = NULL;
-        texture = IMG_LoadTexture(renderer, p_filePath);
+    //-1 means: use the device graphic card if possible, if not, then the GPU
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
-        if(texture == NULL)
-            std::cout << "Error loading texture: " << SDL_GetError() << std::endl;
-
-        return texture;
+    if(!renderer) {
+        std::cout << "Error creating renderer: " << SDL_GetError() << std::endl;
     }
+}
 
-    void clear()
-    {
-        SDL_RenderClear(renderer);
-    }
+SDL_Texture* RenderWindow::loadTexture(const char* p_filePath)
+{
+    SDL_Texture* texture = NULL;
+    texture = IMG_LoadTexture(renderer, p_filePath);
 
-    void render(SDL_Texture* p_text)
-    {
-        SDL_RenderCopy(renderer, p_text, NULL, NULL);
-    }
+    if(texture == NULL)
+        std::cout << "Error loading texture: " << SDL_GetError() << std::endl;
 
-    void display()
-    {
-        SDL_Present(renderer);
-    }
+    return texture;
+}
 
-    void RenderWindow::cleanUp()
-    {
-        SDL_DestroyWindow(window);
-    }
+void RenderWindow::clear()
+{
+    SDL_RenderClear(renderer);
+}
+
+void RenderWindow::render(SDL_Texture* p_text)
+{
+    SDL_RenderCopy(renderer, p_text, NULL, NULL);
+}
+
+void RenderWindow::display()
+{
+    SDL_RenderPresent(renderer);
+}
+
+void RenderWindow::cleanUp()
+{
+    SDL_DestroyWindow(window);
 }
