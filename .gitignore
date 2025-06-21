@@ -6,3 +6,6 @@ main
 lib/
 include/
 *.dll
+
+#VS Code
+*.code-workspace
