@@ -4,8 +4,8 @@ main
 
 #libraries
 lib/
-include/
 *.dll
+include/*
 
 #VS Code
 *.code-workspace
