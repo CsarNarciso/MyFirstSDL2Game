@@ -9,3 +9,6 @@ include/
 
 #VS Code
 *.code-workspace
+
+# But dont exclude application header files!
+!include/*.hpp
