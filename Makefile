@@ -9,11 +9,11 @@ OUT := output/main
 
 # Platform-specific flags
 ifeq ($(UNAME), Linux)
-    INCLUDES := $(shell sdl2-config --cflags)
+    INCLUDES := $(shell sdl2-config --cflags) -Iinclude
 	LIBS := -lSDL2 -lSDL2_image
 else
 	# Assume Windows (MinGW)
-    INCLUDES := -Iinclude -Iinclude/sdl -Iinclude/headers -Llib
+    INCLUDES := -Llib -Iinclude -Iinclude/sdl
 	LIBS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
 endif
 

@@ -23,7 +23,7 @@ int main(int argc, char** args) {
 	RenderWindow window("title", 640, 480);
 
 	//Create a texture
-	SDL_Texture* grassTexture = window.loadTexture("media/ground_grass_1.png");
+	SDL_Texture* grassTexture = window.loadTexture("gfx/ground_grass_1.png");
 
 	//game loop
 	bool gameRunning = true;
