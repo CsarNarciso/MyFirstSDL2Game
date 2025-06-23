@@ -13,7 +13,7 @@ ifeq ($(UNAME), Linux)
 	LIBS := -lSDL2 -lSDL2_image
 else
 	# Assume Windows (MinGW)
-    INCLUDES := -Llib -Iinclude -Iinclude/sdl
+    INCLUDES := -Llib -Iinclude
 	LIBS := -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
 endif
 
