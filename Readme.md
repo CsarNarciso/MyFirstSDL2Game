@@ -9,12 +9,12 @@ Download SDL2 mingw64 version
 Download SDL2 mingw64 image
 Copy include, lib and bin folders from sdl2 image dir to normal sdl2 folder (it contains also these three folders, so add the contents from the image to the normal version)
 Create your project folder, inside, copy sdl2 lib folder to it in the root
-Create include dir in your project root dir and inside create sdl folder, inside, copy everything inside sdl2/include/SDL2
+Create include dir in your project root dir and inside create sdl2 folder, inside, copy everything inside sdl2/include/SDL2
 now, in your root, paste all .dll files from sdl2 bin folder
 in the root create src folder and place there your main.cpp files, or in general your .cpp files
 and finally create in the root a Makefile with the content in this repo makefile file (it is crossplatfform support for linux and windows!) 
 and that's it, now you can just compile your program with mingw32-make -f Makefile to create a .exe
-then just run main.exe to open your program
+then just run main.exe or "output\main.exe" to open your program
 
 -----
 for linux is actually easier...
@@ -27,6 +27,9 @@ And finally create in the root a Makefile with the content of this repo makefile
 and since makefile is crossplatform, just compile with: make -f Makefile
 and run your executable with: ./main (executable name)
 
+
+Now, in your code, to include SDL2, just call it like: #include <SDL2/SDL2.h>
+And this works fine for both plattforms since in linux, by default, this is the location of SDL2, and as you called the subfolder inside your project iclude dir like sdl2, then, it refers to the same!
 
 -----
 NOTE
