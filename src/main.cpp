@@ -25,6 +25,9 @@ int main(int argc, char** args) {
 	//Create a texture
 	SDL_Texture* grassTexture = window.loadTexture("gfx/ground_grass_1.png");
 
+	// Create entity and load texture in entity
+	Entity entity1(100, 100, grassTexture);
+
 	//game loop
 	bool gameRunning = true;
 
@@ -38,7 +41,7 @@ int main(int argc, char** args) {
 			if(event.type == SDL_QUIT) gameRunning = false;
 
 			window.clear();
-			window.render(grassTexture);
+			window.render(entity1);
 			window.display();
 		}
 	}

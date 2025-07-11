@@ -2,9 +2,14 @@
 
 #include "../include/Entity.hpp"
 
-Entity::Entity(float p_x, float p_y, SDL_Texture* p_tex, SDL_Rect p_currentFrame)
-	:x(p_x), y(p_y), tex(p_tex), currentFrame(p_currentFrame)
-{}
+Entity::Entity(float p_x, float p_y, SDL_Texture* p_tex)
+	:x(p_x), y(p_y), tex(p_tex)
+{
+	currentFrame.x = 0; 
+	currentFrame.y = 0; 
+	currentFrame.w = 32; 
+	currentFrame.h = 32; 
+}
 
 float Entity::getX()
 {
