@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <../include/RenderWindow.hpp>
+#include "../include/Math.hpp"
 
 
 int main(int argc, char** args) {
@@ -26,7 +27,7 @@ int main(int argc, char** args) {
 	SDL_Texture* grassTexture = window.loadTexture("gfx/ground_grass_1.png");
 
 	// Create entity and load texture in entity
-	Entity entity1(100, 100, grassTexture);
+	Entity entity1(Vector2f(100, 100), grassTexture);
 
 	//game loop
 	bool gameRunning = true;

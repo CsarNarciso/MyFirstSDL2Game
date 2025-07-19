@@ -1,18 +1,18 @@
 #pragma once
 #include <SDL2/SDL.h>
 
+#include "../include/Math.hpp"
+
 class Entity
 {
 	public:
-		Entity(float p_x, float p_y, SDL_Texture* p_tex);
-		float getX();
-		float getY();
+		Entity(Vector2f p_pos, SDL_Texture* p_tex);
+		Vector2f& getPos();
 		SDL_Texture* getTex();
 		SDL_Rect getCurrentFrame();
 		
 	private:
-		float x;
-		float y;
+		Vector2f pos;
 		SDL_Texture* tex;
 		SDL_Rect currentFrame;
 };
