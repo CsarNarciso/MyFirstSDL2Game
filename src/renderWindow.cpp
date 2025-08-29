@@ -17,7 +17,7 @@ RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
     }
 
     //-1 means: use the device graphic card if possible, if not, then the GPU
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
     if(!renderer) {
         std::cout << "Error creating renderer: " << SDL_GetError() << std::endl;
