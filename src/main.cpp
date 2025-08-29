@@ -23,12 +23,6 @@ int main(int argc, char** args) {
 	//Init window and renderer
 	RenderWindow window("title", 640, 480);
 
-	//Create a texture
-	SDL_Texture* grassTexture = window.loadTexture("gfx/ground_grass_1.png");
-
-	// Create entity and load texture in entity
-	Entity entity1(Vector2f(100, 100), grassTexture);
-
 	//game loop
 	bool gameRunning = true;
 
@@ -42,7 +36,19 @@ int main(int argc, char** args) {
 			if(event.type == SDL_QUIT) gameRunning = false;
 
 			window.clear();
-			window.render(entity1);
+			
+			// Create Loop to load all entities (textures) in window
+			for(int i = 1; i < 10; i++) {
+				// On each lap create new entity texture
+				SDL_Texture* grassTexture = window.loadTexture("gfx/ground_grass_1.png");
+				
+				// And place entity in diferent window position
+				Entity entity(Vector2f(i*32, i*32), grassTexture);
+				
+				// And render
+				window.render(entity);
+			}
+			
 			window.display();
 		}
 	}
