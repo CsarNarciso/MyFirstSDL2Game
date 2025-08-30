@@ -22,6 +22,7 @@ for linux is actually easier...
 just install: sudo apt install build-essential (for c++, gcc, make) libsdl2-dev libsdl2-image-dev
 
 Create your project folder, and inside create src subdir and place there your main.cpp file (or in general your .cpp files)
+Then, in root dir, create a folder called output (here your executables will be palced by default)
 And finally create in the root a Makefile with the content of this repo makefile file
 
 and since makefile is crossplatform, just compile with: make -f Makefile
