@@ -4,6 +4,7 @@
 
 #include <../include/RenderWindow.hpp>
 #include "../include/Math.hpp"
+#include "../include/Map.hpp"
 
 
 int main(int argc, char** args) {
@@ -20,6 +21,8 @@ int main(int argc, char** args) {
 		return 1;
 	}
 	
+	Map map(4,4);
+
 	//Init window and renderer
 	RenderWindow window("title", 640, 480);
 
@@ -37,18 +40,9 @@ int main(int argc, char** args) {
 
 			window.clear();
 			
-			// Create Loop to load all entities (textures) in window
-			for(int i = 1; i < 10; i++) {
-				// On each lap create new entity texture
-				SDL_Texture* grassTexture = window.loadTexture("gfx/ground_grass_1.png");
-				
-				// And place entity in diferent window position
-				Entity entity(Vector2f(i*32, i*32), grassTexture);
-				
-				// And render
-				window.render(entity);
-			}
-			
+			// Render procedural generation map
+			map.generate(&window);
+
 			window.display();
 		}
 	}
