@@ -8,6 +8,7 @@ class Entity
 	public:
 		Entity(Vector2f p_pos, SDL_Texture* p_tex);
 		Vector2f& getPos();
+		void setPos(int x, int y);
 		SDL_Texture* getTex();
 		SDL_Rect getCurrentFrame();
 		

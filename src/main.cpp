@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 
+#include "../include/Entity.hpp"
 #include <../include/RenderWindow.hpp>
 #include "../include/Math.hpp"
 #include "../include/Map.hpp"
@@ -43,18 +44,57 @@ int main(int argc, char** args) {
 		//Process events
 		while(SDL_PollEvent(&event))
 		{
-			if(event.type == SDL_QUIT) gameRunning = false;
+			// Get player pos
+			int currentPlayer_x = player.getPos().x;
+			int currentPlayer_y = player.getPos().y;
 
-			window.clear();
-			
-			// Draw each map tale
-			for(int i = 0; i < generatedMapTales.size(); i++)
+			switch (event.type)
 			{
-				window.render(generatedMapTales[i]);
-			}
+				// Exit game
+				case SDL_QUIT:
+					gameRunning = false;
+					break;
 
-			window.display();
+				// Player movement
+				case SDL_KEYDOWN:
+					
+					switch (event.key.keysym.sym)
+					{
+						case SDLK_UP:
+							player.setPos(currentPlayer_x, currentPlayer_y - 5);
+							break;
+						case SDLK_LEFT:
+							player.setPos(currentPlayer_x - 5, currentPlayer_y);
+							break;
+						case SDLK_DOWN:
+							player.setPos(currentPlayer_x, currentPlayer_y + 5);
+							break;
+						case SDLK_RIGHT:
+							player.setPos(currentPlayer_x + 5, currentPlayer_y);
+							break;
+						default:
+							break;
+					}
+					break;
+
+				default:
+					break;
+			}
 		}
+
+		// Clear
+		window.clear();
+			
+		// Render each map tale
+		for(int i = 0; i < generatedMapTales.size(); i++)
+		{
+			window.render(generatedMapTales[i]);
+		}
+		// Render player
+		window.render(player);
+
+		// Draw
+		window.display();
 	}
 	
 	//destroy window and shutdown SDL
