@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <iostream>
+#include <vector>
 #include <random>
 
 #include "../include/Map.hpp"
@@ -16,7 +17,7 @@ Map::Map(int rows, int columns, unsigned seed)
 
 {};
 
-void Map::generate(RenderWindow* window)
+std::vector< Entity > Map::generate(RenderWindow* window)
 {
     // Declare map tales references
     int water = 0;
@@ -28,6 +29,7 @@ void Map::generate(RenderWindow* window)
     SDL_Texture* dirtTexture = window->loadTexture("gfx/dirt.png");
     SDL_Texture* grassTexture = window->loadTexture("gfx/grass.png");
 
+	std::vector< Entity > mapTales;
     for(int row = 0; row < rows; row++)
     {
         for(int column = 0; column < columns; column++)
@@ -39,8 +41,8 @@ void Map::generate(RenderWindow* window)
                                                         : grassTexture;
             // Draw texture
             Entity entity(Vector2f(32*(column+1), 32*(row+1)), texture);
-            window->render(entity);
+			mapTales.push_back(entity);
         }
     }
-
+	return mapTales;
 }
