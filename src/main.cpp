@@ -1,6 +1,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <iostream>
+#include <vector>
 
 #include <../include/RenderWindow.hpp>
 #include "../include/Math.hpp"
@@ -21,10 +22,16 @@ int main(int argc, char** args) {
 		return 1;
 	}
 	
-	Map map(4,4);
-
 	//Init window and renderer
 	RenderWindow window("title", 640, 480);
+
+	// Generate random map
+	Map map(4,4);	
+	std::vector<Entity> generatedMapTales = map.generate(&window);
+
+	// Declare Player
+	SDL_Texture* playerTexture = window.loadTexture("gfx/player.png");
+	Entity player(Vector2f(32, 32), playerTexture);
 
 	//game loop
 	bool gameRunning = true;
@@ -40,8 +47,11 @@ int main(int argc, char** args) {
 
 			window.clear();
 			
-			// Render procedural generation map
-			map.generate(&window);
+			// Draw each map tale
+			for(int i = 0; i < generatedMapTales.size(); i++)
+			{
+				window.render(generatedMapTales[i]);
+			}
 
 			window.display();
 		}
