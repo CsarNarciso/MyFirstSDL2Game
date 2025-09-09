@@ -17,6 +17,11 @@ Vector2f& Entity::getPos()
 	return pos;
 }
 
+void Entity::setPos(int x, int y)
+{
+	pos = Vector2f(x, y);
+}
+
 SDL_Texture* Entity::getTex()
 {
 	return tex;
