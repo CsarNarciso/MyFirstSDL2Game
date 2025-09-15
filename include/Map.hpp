@@ -10,11 +10,11 @@
 class Map
 {
     public:
-        Map(int rows, int columns, unsigned seed = std::random_device{}());
-        std::vector< Entity > generate(RenderWindow* window);
+    std::vector< Entity > generate(RenderWindow* window);
+    Map(int columns, int rows, unsigned seed = std::random_device{}());
     private:
-        int rows;
         int columns;
+        int rows;
         
         int generateRandomTaleReference() { return dist(gen); }
         std::mt19937 gen;
