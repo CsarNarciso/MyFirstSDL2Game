@@ -24,15 +24,17 @@ int main(int argc, char** args) {
 	}
 	
 	//Init window and renderer
-	RenderWindow window("title", 640, 480);
+	int window_width = 640;
+	int window_height = 480;
+	RenderWindow window("title", window_width, window_height);
 
 	// Generate random map
-	Map map(4,4);	
+	Map map(window_width, window_height);	
 	std::vector<Entity> generatedMapTales = map.generate(&window);
 
 	// Declare Player
 	SDL_Texture* playerTexture = window.loadTexture("gfx/player.png");
-	Entity player(Vector2f(32, 32), playerTexture);
+	Entity player(Vector2f(0, 0), playerTexture);
 
 	//game loop
 	bool gameRunning = true;
@@ -47,6 +49,7 @@ int main(int argc, char** args) {
 			// Get player pos
 			int currentPlayer_x = player.getPos().x;
 			int currentPlayer_y = player.getPos().y;
+			int playerMovementPixels = 32;
 
 			switch (event.type)
 			{
@@ -61,16 +64,16 @@ int main(int argc, char** args) {
 					switch (event.key.keysym.sym)
 					{
 						case SDLK_UP:
-							player.setPos(currentPlayer_x, currentPlayer_y - 5);
+							player.setPos(currentPlayer_x, currentPlayer_y - playerMovementPixels);
 							break;
 						case SDLK_LEFT:
-							player.setPos(currentPlayer_x - 5, currentPlayer_y);
+							player.setPos(currentPlayer_x - playerMovementPixels, currentPlayer_y);
 							break;
 						case SDLK_DOWN:
-							player.setPos(currentPlayer_x, currentPlayer_y + 5);
+							player.setPos(currentPlayer_x, currentPlayer_y + playerMovementPixels);
 							break;
 						case SDLK_RIGHT:
-							player.setPos(currentPlayer_x + 5, currentPlayer_y);
+							player.setPos(currentPlayer_x + playerMovementPixels, currentPlayer_y);
 							break;
 						default:
 							break;

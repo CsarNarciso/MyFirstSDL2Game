@@ -9,12 +9,11 @@
 
 #include "../include/Math.hpp"
 
-Map::Map(int rows, int columns, unsigned seed)
-    : rows(rows)
-    , columns(columns)
+Map::Map(int p_columns, int p_rows, unsigned seed)
+    : columns(p_columns/32)
+    , rows(p_rows/32)
     , gen(seed)
     , dist(0, 2)
-
 {};
 
 std::vector< Entity > Map::generate(RenderWindow* window)
@@ -40,7 +39,7 @@ std::vector< Entity > Map::generate(RenderWindow* window)
                                  : (taleReference == 1) ? dirtTexture
                                                         : grassTexture;
             // Draw texture
-            Entity entity(Vector2f(32*(column+1), 32*(row+1)), texture);
+            Entity entity(Vector2f(32*(column), 32*(row)), texture);
 			mapTales.push_back(entity);
         }
     }
