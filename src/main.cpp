@@ -11,6 +11,8 @@
 #include "../include/Math.hpp"
 #include "../include/Map.hpp"
 
+
+// MOVE ALL THIS CODE TO player or map classes!
 bool positionExists(int row, int column, std::vector<std::vector<int>>& map)
 {
 	return row >= 0 && row < map.size() && 
@@ -25,6 +27,55 @@ bool isWater(int row, int column, std::vector<std::vector<int>>& map)
 bool canMove(int row, int column, std::vector<std::vector<int>>& map)
 {
 	return positionExists(row, column, map) && !isWater(row, column, map);
+}
+
+enum class Direction { UP, LEFT, DOWN, RIGHT };
+
+
+void tryMove(Direction dir, Player& player, Map& map, std::vector<std::vector<int>>& mapTileReferences)
+{
+	Vector2f pos = player.getPos();
+	SDL_Rect frame = player.getCurrentFrame();
+	
+	int speed = player.getPlayerMovementPx();
+	int tileSize = map.getTaleSize();
+
+	int edgePos, nextEdgePos, tile, tileLimit, nextTile, pxToMove;
+	bool willCollide = false;
+
+	bool incrementPos = (dir == Direction::DOWN || dir == Direction::RIGHT);
+	int d = incrementPos ? 1 : -1;
+
+	if (dir == Direction::DOWN || dir == Direction::UP)
+	{
+		edgePos = pos.y + (incrementPos ? frame.h : 0);
+		tile = (edgePos-(1*d))/tileSize;
+		tileLimit = (tile * tileSize) + (incrementPos ? tileSize : 0);
+		nextEdgePos = edgePos + (speed * d);
+		nextTile = nextEdgePos >= 0 ? (nextEdgePos-(1*d))/tileSize : -1;
+
+		willCollide = (incrementPos ? (nextTile > tile) : (nextTile < tile)) && !canMove(nextTile, pos.x/tileSize, mapTileReferences);
+		
+		pxToMove = willCollide ? tileLimit - edgePos : speed*d;
+
+		if(pxToMove != 0)
+			player.setPos(pos.x, pos.y + pxToMove);
+	}
+	else
+	{
+		edgePos = pos.x + (incrementPos ? frame.h : 0);
+		tile = (edgePos-(1*d))/tileSize;
+		tileLimit = (tile * tileSize) + (incrementPos ? tileSize : 0);
+		nextEdgePos = edgePos + (speed * d);
+		nextTile = nextEdgePos >= 0 ? (nextEdgePos-(1*d))/tileSize : -1;
+
+		willCollide = (incrementPos ? (nextTile > tile) : (nextTile < tile)) && !canMove(pos.y/tileSize, nextTile, mapTileReferences);
+
+		pxToMove = willCollide ? tileLimit - edgePos : speed*d;
+
+		if(pxToMove != 0)
+			player.setPos(pos.x + pxToMove, pos.y);
+	}
 }
 
 int main(int argc, char** args) {
@@ -53,10 +104,6 @@ int main(int argc, char** args) {
 
 	// Declare Player
 	Player player(&window);
-	int currentPlayer_x;
-	int currentPlayer_y;
-	int currentPlayer_taleRow;
-	int currentPlayer_taleColumn;
 	const std::map<SDL_Keycode, std::pair<int, int>>& directions = player.getDirections();
 	std::map<SDL_Keycode, std::pair<int, int>>::const_iterator it;
 
@@ -71,13 +118,6 @@ int main(int argc, char** args) {
 		//Process events
 		while(SDL_PollEvent(&event))
 		{
-			// Get player pos
-			currentPlayer_y = player.getPos().y;
-			currentPlayer_x = player.getPos().x;
-			currentPlayer_taleRow = currentPlayer_y/map.getTaleSize();
-			currentPlayer_taleColumn = currentPlayer_x/map.getTaleSize();
-			it = directions.find(event.key.keysym.sym);
-
 			switch (event.type)
 			{
 				// Exit game
@@ -88,19 +128,13 @@ int main(int argc, char** args) {
 				// Player movement
 				case SDL_KEYDOWN:
 					
-					if(it != directions.end())
+					switch (event.key.keysym.sym)
 					{
-						int dy = it->second.first;
-						int dx = it->second.second;
-
-						if(canMove(currentPlayer_taleRow+dy, currentPlayer_taleColumn+dx, mapTaleReferences))
-							player.setPos(
-								currentPlayer_x + (player.getPlayerMovementPx() * dx), 
-								currentPlayer_y + (player.getPlayerMovementPx() * dy));
+						case SDLK_UP: tryMove(Direction::UP, player, map, mapTaleReferences); break;
+						case SDLK_LEFT: tryMove(Direction::LEFT, player, map, mapTaleReferences); break;
+						case SDLK_DOWN: tryMove(Direction::DOWN, player, map, mapTaleReferences); break;
+						case SDLK_RIGHT: tryMove(Direction::RIGHT, player, map, mapTaleReferences); break;
 					}
-					break;
-					
-				default:
 					break;
 			}
 		}
