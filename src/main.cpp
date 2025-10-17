@@ -43,19 +43,27 @@ void tryMove(Direction dir, Player& player, Map& map, std::vector<std::vector<in
 	int edgePos, nextEdgePos, tile, tileLimit, nextTile, pxToMove;
 	bool willCollide = false;
 
-	bool incrementPos = (dir == Direction::DOWN || dir == Direction::RIGHT);
-	int d = incrementPos ? 1 : -1;
+	bool movingPositive = (dir == Direction::DOWN || dir == Direction::RIGHT);
+	int d = movingPositive ? 1 : -1;
 
 	if (dir == Direction::DOWN || dir == Direction::UP)
 	{
-		edgePos = pos.y + (incrementPos ? frame.h : 0);
+		edgePos = pos.y + (movingPositive ? frame.h : 0);
 		tile = (edgePos-(1*d))/tileSize;
-		tileLimit = (tile * tileSize) + (incrementPos ? tileSize : 0);
+		tileLimit = (tile * tileSize) + (movingPositive ? tileSize : 0);
 		nextEdgePos = edgePos + (speed * d);
 		nextTile = nextEdgePos >= 0 ? (nextEdgePos-(1*d))/tileSize : -1;
 
-		willCollide = (incrementPos ? (nextTile > tile) : (nextTile < tile)) && !canMove(nextTile, pos.x/tileSize, mapTileReferences);
-		
+		if ((movingPositive && nextTile > tile) || (!movingPositive && nextTile < tile))
+		{
+			// Get all colliding tiles (both direction side edge corners)
+			int startCorner = pos.x;
+			int endCorner = (pos.x + frame.w) - 1;
+			int startCornerTile = startCorner/tileSize;
+			int endCornerTile = endCorner/tileSize;
+
+			willCollide = (!canMove(nextTile, startCornerTile, mapTileReferences) || !canMove(nextTile, endCornerTile, mapTileReferences));			
+		}
 		pxToMove = willCollide ? tileLimit - edgePos : speed*d;
 
 		if(pxToMove != 0)
@@ -63,14 +71,22 @@ void tryMove(Direction dir, Player& player, Map& map, std::vector<std::vector<in
 	}
 	else
 	{
-		edgePos = pos.x + (incrementPos ? frame.h : 0);
+		edgePos = pos.x + (movingPositive ? frame.h : 0);
 		tile = (edgePos-(1*d))/tileSize;
-		tileLimit = (tile * tileSize) + (incrementPos ? tileSize : 0);
+		tileLimit = (tile * tileSize) + (movingPositive ? tileSize : 0);
 		nextEdgePos = edgePos + (speed * d);
 		nextTile = nextEdgePos >= 0 ? (nextEdgePos-(1*d))/tileSize : -1;
 
-		willCollide = (incrementPos ? (nextTile > tile) : (nextTile < tile)) && !canMove(pos.y/tileSize, nextTile, mapTileReferences);
+		if ((movingPositive && nextTile > tile) || (!movingPositive && nextTile < tile))
+		{
+			// Get all colliding tiles (both direction side edge corners)
+			int startCorner = pos.y;
+			int endCorner = (pos.y + frame.w) - 1;
+			int startCornerTile = startCorner/tileSize;
+			int endCornerTile = endCorner/tileSize;
 
+			willCollide = (!canMove(startCornerTile, nextTile, mapTileReferences) || !canMove(endCornerTile, nextTile, mapTileReferences));
+		}
 		pxToMove = willCollide ? tileLimit - edgePos : speed*d;
 
 		if(pxToMove != 0)
