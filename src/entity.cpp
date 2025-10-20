@@ -31,3 +31,13 @@ SDL_Rect Entity::getCurrentFrame()
 {
 	return currentFrame;
 }
+
+void Entity::setAngle(float p_angle)
+{
+	angle = p_angle;
+}
+
+float Entity::getAngle()
+{
+	return angle;
+}
