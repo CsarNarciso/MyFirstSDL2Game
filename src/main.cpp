@@ -2,8 +2,6 @@
 #include <SDL2/SDL_image.h>
 #include <iostream>
 #include <vector>
-#include <map>
-#include <utility>
 
 #include "../include/Entity.hpp"
 #include "../include/Player.hpp"
@@ -31,50 +29,107 @@ bool canMove(int row, int column, std::vector<std::vector<int>>& map)
 
 enum class Direction { UP, LEFT, DOWN, RIGHT };
 
-
-void tryMove(Direction dir, Player& player, Map& map, std::vector<std::vector<int>>& mapTileReferences)
+void rotate(Direction dir, Player& player)
 {
-	Vector2f pos = player.getPos();
-	SDL_Rect frame = player.getCurrentFrame();
-	
-	int speed = player.getPlayerMovementPx();
+	int rotationSpeed = player.getRotationSpeed();
+	int d = (dir == Direction::RIGHT) ? 1 : -1;
+	player.setAngle(player.getAngle() + d * rotationSpeed);
+}
+
+
+bool collidesWithMap(const SDL_Rect& box, Map& map, std::vector<std::vector<int>>& mapTileReferences) {
+    
 	int tileSize = map.getTaleSize();
 
-	int edgePos, nextEdgePos, tile, tileLimit, nextTile, pxToMove;
-	bool willCollide = false;
+    int top = (box.y >= 0) ? box.y / tileSize : -1;
+    int left = (box.x >= 0) ? box.x / tileSize : -1;
+    int bottom = (box.y + box.h - 1) / tileSize;
+    int right = (box.x + box.w - 1) / tileSize;
 
-	bool incrementPos = (dir == Direction::DOWN || dir == Direction::RIGHT);
-	int d = incrementPos ? 1 : -1;
+    for (int row = top; row <= bottom; ++row) {
+        for (int col = left; col <= right; ++col) {
+            if (!canMove(row, col, mapTileReferences)) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
 
-	if (dir == Direction::DOWN || dir == Direction::UP)
+void tryMoveWithCollision(Player& player, float dx, float dy, Map& map, std::vector<std::vector<int>>& mapTileReferences) {
+    SDL_Rect futureBox = {
+        static_cast<int>(player.getPos().x + dx),
+        static_cast<int>(player.getPos().y + dy),
+        player.getCurrentFrame().w,
+        player.getCurrentFrame().h
+    };
+    if (!collidesWithMap(futureBox, map, mapTileReferences)) {
+        player.setPos(player.getPos().x += dx, player.getPos().y += dy);
+		return;
+    }
+	
+	SDL_Rect xBox = {
+        static_cast<int>(player.getPos().x + dx),
+        static_cast<int>(player.getPos().y),
+        player.getCurrentFrame().w,
+        player.getCurrentFrame().h
+    };
+    if (!collidesWithMap(xBox, map, mapTileReferences)) {
+        player.setPos(player.getPos().x += dx, player.getPos().y);
+		return;
+    }
+	
+	SDL_Rect yBox = {
+        static_cast<int>(player.getPos().x),
+        static_cast<int>(player.getPos().y + dy),
+        player.getCurrentFrame().w,
+        player.getCurrentFrame().h
+    };
+    if (!collidesWithMap(yBox, map, mapTileReferences)) {
+        player.setPos(player.getPos().x, player.getPos().y += dy);
+		return;
+    }
+}
+
+
+void move(Direction dir, Player& player, Map& map, std::vector<std::vector<int>>& mapTileReferences)
+{
+	int rotationSpeed = player.getRotationSpeed();
+	float angle = player.getAngle();
+	float rad = angle * M_PI / 180.0f;
+
+	int d = (dir == Direction::UP) ? 1 : -1;
+
+	float dx = cos(rad) * (rotationSpeed * d);
+	float dy = sin(rad) * (rotationSpeed * d);
+
+	tryMoveWithCollision(player, dx, dy, map, mapTileReferences);
+}
+
+bool pressedKeyUp = false;
+bool pressedKeyDown = false;
+bool pressedKeyLeft = false;
+bool pressedKeyRight = false;
+
+void handlePlayerMovement(Player& player, Map& map, std::vector<std::vector<int>>& mapTileReferences)
+{
+	//	Move forward and backward
+	if(pressedKeyUp)
 	{
-		edgePos = pos.y + (incrementPos ? frame.h : 0);
-		tile = (edgePos-(1*d))/tileSize;
-		tileLimit = (tile * tileSize) + (incrementPos ? tileSize : 0);
-		nextEdgePos = edgePos + (speed * d);
-		nextTile = nextEdgePos >= 0 ? (nextEdgePos-(1*d))/tileSize : -1;
-
-		willCollide = (incrementPos ? (nextTile > tile) : (nextTile < tile)) && !canMove(nextTile, pos.x/tileSize, mapTileReferences);
-		
-		pxToMove = willCollide ? tileLimit - edgePos : speed*d;
-
-		if(pxToMove != 0)
-			player.setPos(pos.x, pos.y + pxToMove);
+		move(Direction::UP, player, map, mapTileReferences);
 	}
-	else
+	if(pressedKeyDown)
 	{
-		edgePos = pos.x + (incrementPos ? frame.h : 0);
-		tile = (edgePos-(1*d))/tileSize;
-		tileLimit = (tile * tileSize) + (incrementPos ? tileSize : 0);
-		nextEdgePos = edgePos + (speed * d);
-		nextTile = nextEdgePos >= 0 ? (nextEdgePos-(1*d))/tileSize : -1;
-
-		willCollide = (incrementPos ? (nextTile > tile) : (nextTile < tile)) && !canMove(pos.y/tileSize, nextTile, mapTileReferences);
-
-		pxToMove = willCollide ? tileLimit - edgePos : speed*d;
-
-		if(pxToMove != 0)
-			player.setPos(pos.x + pxToMove, pos.y);
+		move(Direction::DOWN, player, map, mapTileReferences);
+	}
+	//	Rotation
+	if(pressedKeyLeft)
+	{
+		rotate(Direction::LEFT, player);
+	}
+	if(pressedKeyRight)
+	{
+		rotate(Direction::RIGHT, player);
 	}
 }
 
@@ -100,13 +155,10 @@ int main(int argc, char** args) {
 	// Generate random map
 	Map map(window_width, window_height);	
 	std::vector<Entity> mapTaleEntities = map.generate(&window);
-	std::vector< std::vector< int >> mapTaleReferences = map.getTaleReferences();
+	std::vector< std::vector< int >> mapTileReferences = map.getTaleReferences();
 
 	// Declare Player
 	Player player(&window);
-	const std::map<SDL_Keycode, std::pair<int, int>>& directions = player.getDirections();
-	std::map<SDL_Keycode, std::pair<int, int>>::const_iterator it;
-
 
 	//game loop
 	bool gameRunning = true;
@@ -125,20 +177,32 @@ int main(int argc, char** args) {
 					gameRunning = false;
 					break;
 
-				// Player movement
+				// Detect gameplay pressed keys
 				case SDL_KEYDOWN:
 					
 					switch (event.key.keysym.sym)
 					{
-						case SDLK_UP: tryMove(Direction::UP, player, map, mapTaleReferences); break;
-						case SDLK_LEFT: tryMove(Direction::LEFT, player, map, mapTaleReferences); break;
-						case SDLK_DOWN: tryMove(Direction::DOWN, player, map, mapTaleReferences); break;
-						case SDLK_RIGHT: tryMove(Direction::RIGHT, player, map, mapTaleReferences); break;
+						case SDLK_UP: pressedKeyUp = true; break;
+						case SDLK_DOWN: pressedKeyDown = true; break;
+						case SDLK_LEFT: pressedKeyLeft = true; break;
+						case SDLK_RIGHT: pressedKeyRight = true; break;
+					}
+					break;
+				case SDL_KEYUP:
+					
+					switch (event.key.keysym.sym)
+					{
+						case SDLK_UP: pressedKeyUp = false; break;
+						case SDLK_DOWN: pressedKeyDown = false; break;
+						case SDLK_LEFT: pressedKeyLeft = false; break;
+						case SDLK_RIGHT: pressedKeyRight = false; break;
 					}
 					break;
 			}
 		}
-
+		// Player movement
+		handlePlayerMovement(player, map, mapTileReferences);
+		
 		// Clear
 		window.clear();
 			

@@ -1,6 +1,4 @@
 #include <SDL2/SDL.h>
-#include <map>
-#include <utility>
 
 #include "./RenderWindow.hpp"
 #include "./Entity.hpp"
@@ -13,5 +11,5 @@ Player::Player(RenderWindow* window) : Entity(Vector2f(0, 0), window->loadTextur
 int& Player::getPlayerMovementPx()
 {return playerMovementPx;}
 
-const std::map<SDL_Keycode, std::pair<int, int>>& Player::getDirections()
-{return directions;}
+int& Player::getRotationSpeed()
+{return rotationSpeed;}

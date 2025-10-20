@@ -11,9 +11,12 @@ class Entity
 		void setPos(int x, int y);
 		SDL_Texture* getTex();
 		SDL_Rect getCurrentFrame();
+		void setAngle(float angle);
+		float getAngle();
 		
 	private:
 		Vector2f pos;
 		SDL_Texture* tex;
 		SDL_Rect currentFrame;
+		float angle;
 };
