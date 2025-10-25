@@ -17,21 +17,6 @@ SDL_Texture* Entity::getTex()
 {return tex;}
 
 SDL_Rect Entity::getCurrentFrame()
-<<<<<<< HEAD:src/entity.cpp
-{
-	return currentFrame;
-}
-
-void Entity::setAngle(float p_angle)
-{
-	angle = p_angle;
-}
-
-float Entity::getAngle()
-{
-	return angle;
-}
-=======
 {return currentFrame;}
 
 void Entity::setPos(int x, int y)
@@ -45,4 +30,3 @@ void Entity::setAngle(float p_angle)
 
 float Entity::getAngle()
 {return angle;}
->>>>>>> fix/ModularizeCollisionAndMovementLogic:src/entity/entity.cpp
