@@ -65,9 +65,11 @@ int main(int argc, char** args) {
 						case SDLK_DOWN: input.down = true; break;
 						case SDLK_LEFT: input.left = true; break;
 						case SDLK_RIGHT: input.right = true; break;
+
+						case SDLK_LSHIFT: input.running = true; break;
 					}
 					break;
-				case SDL_KEYUP:
+					case SDL_KEYUP:
 					
 					switch (event.key.keysym.sym)
 					{
@@ -75,6 +77,8 @@ int main(int argc, char** args) {
 						case SDLK_DOWN: input.down = false; break;
 						case SDLK_LEFT: input.left = false; break;
 						case SDLK_RIGHT: input.right = false; break;
+
+						case SDLK_LSHIFT: input.running = false; break;
 					}
 					break;
 			}

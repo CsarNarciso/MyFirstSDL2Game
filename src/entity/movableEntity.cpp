@@ -6,8 +6,12 @@
 
 #include "../../include/entity/MovableEntity.hpp"
 
-MovableEntity::MovableEntity(Vector2f p_pos, SDL_Texture* p_tex) : Entity(p_pos, p_tex)
-{}
+MovableEntity::MovableEntity(Vector2f p_pos, SDL_Texture* p_tex, int p_speed, int p_runningSpeed, int p_rotationSpeed) : Entity(p_pos, p_tex)
+{
+    speed = p_speed;
+    runningSpeed = p_runningSpeed;
+    rotationSpeed = p_rotationSpeed;
+};
 
 int& MovableEntity::getSpeed()
 {return speed;}
@@ -15,6 +19,8 @@ int& MovableEntity::getSpeed()
 int& MovableEntity::getRotationSpeed()
 {return rotationSpeed;}
 
+void MovableEntity::setRunning(bool p_running)
+{running = p_running;};
 
 
 void MovableEntity::rotate(Direction dir)
@@ -87,8 +93,8 @@ void MovableEntity::move(Direction dir, Map& map)
 	float rad = getAngle() * M_PI / 180.0f;
 	int d = (dir == Direction::UP) ? 1 : -1;
 
-	float dx = cos(rad) * (rotationSpeed * d);
-	float dy = sin(rad) * (rotationSpeed * d);
+	float dx = cos(rad) * ((running ? runningSpeed : speed) * d);
+	float dy = sin(rad) * ((running ? runningSpeed : speed) * d);
 
 	tryMoveWithCollision(dx, dy, map);
 }

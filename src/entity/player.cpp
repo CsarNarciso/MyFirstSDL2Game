@@ -8,11 +8,14 @@
 
 #include "../../include/entity/Player.hpp"
 
-Player::Player(RenderWindow* window) : MovableEntity(Vector2f(0, 0), window->loadTexture("gfx/player.png"))
+Player::Player(RenderWindow* window) : MovableEntity(Vector2f(0, 0), window->loadTexture("gfx/player.png"), 2, 5, 5)
 {}
 
 void Player::handlePlayerMovement(Map& map, const InputState input)
 {
+	// Running?
+	setRunning(input.running);
+
 	//	Move forward and backward
 	if(input.up)
 	{
