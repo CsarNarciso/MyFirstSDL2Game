@@ -6,10 +6,13 @@ main
 #libraries
 lib/
 *.dll
-include/*
 
 #VS Code
 *.code-workspace
 
-# But dont exclude application header files!
-!include/*.hpp
+# Ignore only the SDL2 folder inside include/ (just for windows)
+include/SDL2/
+
+# But keep everything else in include/
+!include/**/
+!include/**/*.hpp
