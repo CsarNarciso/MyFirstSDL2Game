@@ -8,7 +8,7 @@
 
 #include "../../include/entity/Player.hpp"
 
-Player::Player(RenderWindow* window) : MovableEntity(Vector2f(0, 0), window->loadTexture("gfx/player1.png"))
+Player::Player(RenderWindow* window) : MovableEntity(Vector2f(0, 0), window->loadTexture("gfx/player.png"))
 {}
 
 void Player::handlePlayerMovement(Map& map, const InputState input)
