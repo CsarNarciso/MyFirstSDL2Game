@@ -3,7 +3,7 @@
 #include <SDL2/SDL_image.h>
 
 #include "../include/RenderWindow.hpp"
-#include "../include/Entity.hpp"
+#include "../include/entity/Entity.hpp"
 
 RenderWindow::RenderWindow(const char* p_title, int p_w, int p_h)
     :window(NULL), renderer(NULL) 

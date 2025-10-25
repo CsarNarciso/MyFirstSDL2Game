@@ -3,135 +3,13 @@
 #include <iostream>
 #include <vector>
 
-#include "../include/Entity.hpp"
-#include "../include/Player.hpp"
+#include "../include/entity/Entity.hpp"
+#include "../include/entity/Player.hpp"
 #include <../include/RenderWindow.hpp>
 #include "../include/Math.hpp"
 #include "../include/Map.hpp"
+#include "../include/Input.hpp"
 
-
-// MOVE ALL THIS CODE TO player or map classes!
-bool positionExists(int row, int column, std::vector<std::vector<int>>& map)
-{
-	return row >= 0 && row < map.size() && 
-			column >= 0 && column < map[row].size();
-}
-
-bool isWater(int row, int column, std::vector<std::vector<int>>& map)
-{
-	return map[row][column] == 0;
-}
-
-bool canMove(int row, int column, std::vector<std::vector<int>>& map)
-{
-	return positionExists(row, column, map) && !isWater(row, column, map);
-}
-
-enum class Direction { UP, LEFT, DOWN, RIGHT };
-
-void rotate(Direction dir, Player& player)
-{
-	int rotationSpeed = player.getRotationSpeed();
-	int d = (dir == Direction::RIGHT) ? 1 : -1;
-	player.setAngle(player.getAngle() + d * rotationSpeed);
-}
-
-
-bool collidesWithMap(const SDL_Rect& box, Map& map, std::vector<std::vector<int>>& mapTileReferences) {
-    
-	int tileSize = map.getTaleSize();
-
-    int top = (box.y >= 0) ? box.y / tileSize : -1;
-    int left = (box.x >= 0) ? box.x / tileSize : -1;
-    int bottom = (box.y + box.h - 1) / tileSize;
-    int right = (box.x + box.w - 1) / tileSize;
-
-    for (int row = top; row <= bottom; ++row) {
-        for (int col = left; col <= right; ++col) {
-            if (!canMove(row, col, mapTileReferences)) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-void tryMoveWithCollision(Player& player, float dx, float dy, Map& map, std::vector<std::vector<int>>& mapTileReferences) {
-    SDL_Rect futureBox = {
-        static_cast<int>(player.getPos().x + dx),
-        static_cast<int>(player.getPos().y + dy),
-        player.getCurrentFrame().w,
-        player.getCurrentFrame().h
-    };
-    if (!collidesWithMap(futureBox, map, mapTileReferences)) {
-        player.setPos(player.getPos().x += dx, player.getPos().y += dy);
-		return;
-    }
-	
-	SDL_Rect xBox = {
-        static_cast<int>(player.getPos().x + dx),
-        static_cast<int>(player.getPos().y),
-        player.getCurrentFrame().w,
-        player.getCurrentFrame().h
-    };
-    if (!collidesWithMap(xBox, map, mapTileReferences)) {
-        player.setPos(player.getPos().x += dx, player.getPos().y);
-		return;
-    }
-	
-	SDL_Rect yBox = {
-        static_cast<int>(player.getPos().x),
-        static_cast<int>(player.getPos().y + dy),
-        player.getCurrentFrame().w,
-        player.getCurrentFrame().h
-    };
-    if (!collidesWithMap(yBox, map, mapTileReferences)) {
-        player.setPos(player.getPos().x, player.getPos().y += dy);
-		return;
-    }
-}
-
-
-void move(Direction dir, Player& player, Map& map, std::vector<std::vector<int>>& mapTileReferences)
-{
-	int rotationSpeed = player.getRotationSpeed();
-	float angle = player.getAngle();
-	float rad = angle * M_PI / 180.0f;
-
-	int d = (dir == Direction::UP) ? 1 : -1;
-
-	float dx = cos(rad) * (rotationSpeed * d);
-	float dy = sin(rad) * (rotationSpeed * d);
-
-	tryMoveWithCollision(player, dx, dy, map, mapTileReferences);
-}
-
-bool pressedKeyUp = false;
-bool pressedKeyDown = false;
-bool pressedKeyLeft = false;
-bool pressedKeyRight = false;
-
-void handlePlayerMovement(Player& player, Map& map, std::vector<std::vector<int>>& mapTileReferences)
-{
-	//	Move forward and backward
-	if(pressedKeyUp)
-	{
-		move(Direction::UP, player, map, mapTileReferences);
-	}
-	if(pressedKeyDown)
-	{
-		move(Direction::DOWN, player, map, mapTileReferences);
-	}
-	//	Rotation
-	if(pressedKeyLeft)
-	{
-		rotate(Direction::LEFT, player);
-	}
-	if(pressedKeyRight)
-	{
-		rotate(Direction::RIGHT, player);
-	}
-}
 
 int main(int argc, char** args) {
 	
@@ -154,11 +32,12 @@ int main(int argc, char** args) {
 
 	// Generate random map
 	Map map(window_width, window_height);	
-	std::vector<Entity> mapTaleEntities = map.generate(&window);
-	std::vector< std::vector< int >> mapTileReferences = map.getTaleReferences();
+	std::vector<Entity> mapTileEntities = map.generate(&window);
 
 	// Declare Player
 	Player player(&window);
+
+	InputState input;
 
 	//game loop
 	bool gameRunning = true;
@@ -182,34 +61,34 @@ int main(int argc, char** args) {
 					
 					switch (event.key.keysym.sym)
 					{
-						case SDLK_UP: pressedKeyUp = true; break;
-						case SDLK_DOWN: pressedKeyDown = true; break;
-						case SDLK_LEFT: pressedKeyLeft = true; break;
-						case SDLK_RIGHT: pressedKeyRight = true; break;
+						case SDLK_UP: input.up = true; break;
+						case SDLK_DOWN: input.down = true; break;
+						case SDLK_LEFT: input.left = true; break;
+						case SDLK_RIGHT: input.right = true; break;
 					}
 					break;
 				case SDL_KEYUP:
 					
 					switch (event.key.keysym.sym)
 					{
-						case SDLK_UP: pressedKeyUp = false; break;
-						case SDLK_DOWN: pressedKeyDown = false; break;
-						case SDLK_LEFT: pressedKeyLeft = false; break;
-						case SDLK_RIGHT: pressedKeyRight = false; break;
+						case SDLK_UP: input.up = false; break;
+						case SDLK_DOWN: input.down = false; break;
+						case SDLK_LEFT: input.left = false; break;
+						case SDLK_RIGHT: input.right = false; break;
 					}
 					break;
 			}
 		}
 		// Player movement
-		handlePlayerMovement(player, map, mapTileReferences);
+		player.handlePlayerMovement(map, input);
 		
 		// Clear
 		window.clear();
 			
 		// Render each map tale
-		for(int i = 0; i < mapTaleEntities.size(); i++)
+		for(int i = 0; i < mapTileEntities.size(); i++)
 		{
-			window.render(mapTaleEntities[i]);
+			window.render(mapTileEntities[i]);
 		}
 		// Render player
 		window.render(player);
