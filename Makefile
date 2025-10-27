@@ -3,7 +3,7 @@ UNAME := $(shell uname)
 
 # Compiler and source files
 CXX := g++
-SRC := $(shell find src -name '*.cpp')
+SRC := $(wildcard src/*.cpp) $(wildcard src/*/*.cpp)
 OUT := output/main
 
 
