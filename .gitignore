@@ -14,5 +14,5 @@ lib/
 include/SDL2/
 
 # But keep everything else in include/
-!include/**/
+!include/*.hpp
 !include/**/*.hpp
