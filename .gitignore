@@ -16,3 +16,7 @@ include/SDL2/
 # But keep everything else in include/
 !include/*.hpp
 !include/**/*.hpp
+
+# Sublime project/workspace files
+*.sublime-project
+*.sublime-workspace
