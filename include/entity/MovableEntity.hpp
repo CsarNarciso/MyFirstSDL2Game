@@ -15,7 +15,7 @@ class MovableEntity : public Entity
 		void setRunning(bool running);
 
 		void rotate(Direction dir);
-		bool collidesWithMap(const SDL_Rect& box, Map& map);
+		bool collidesWithMap(const SDL_FRect& box, Map& map);
 		void tryMoveWithCollision(float dx, float dy, Map& map);
 		void move(Direction dir, Map& map);
 

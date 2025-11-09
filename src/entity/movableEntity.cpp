@@ -30,7 +30,7 @@ void MovableEntity::rotate(Direction dir)
 }
 
 
-bool MovableEntity::collidesWithMap(const SDL_Rect& box, Map& map) {
+bool MovableEntity::collidesWithMap(const SDL_FRect& box, Map& map) {
     
 	int tileSize = map.getTileSize();
 
@@ -51,38 +51,38 @@ bool MovableEntity::collidesWithMap(const SDL_Rect& box, Map& map) {
 
 void MovableEntity::tryMoveWithCollision(float dx, float dy, Map& map) {
 
-    SDL_Rect currentFrame = getCurrentFrame();
+    SDL_FRect currentFrame = getCurrentFrame();
 
-    SDL_Rect futureBox = {
-        static_cast<int>(getPos().x + dx),
-        static_cast<int>(getPos().y + dy),
+    SDL_FRect futureBox = {
+        getPos().x + dx,
+        getPos().y + dy,
         currentFrame.w,
         currentFrame.h
     };
     if (!collidesWithMap(futureBox, map)) {
-        setPos(getPos().x += dx, getPos().y += dy);
+        setPos(getPos().x + dx, getPos().y + dy);
 		return;
     }
 	
-	SDL_Rect xBox = {
-        static_cast<int>(getPos().x + dx),
-        static_cast<int>(getPos().y),
+	SDL_FRect xBox = {
+        getPos().x + dx,
+        getPos().y,
         currentFrame.w,
         currentFrame.h
     };
     if (!collidesWithMap(xBox, map)) {
-        setPos(getPos().x += dx, getPos().y);
+        setPos(getPos().x + dx, getPos().y);
 		return;
     }
 	
-	SDL_Rect yBox = {
-        static_cast<int>(getPos().x),
-        static_cast<int>(getPos().y + dy),
+	SDL_FRect yBox = {
+        getPos().x,
+        getPos().y + dy,
         currentFrame.w,
         currentFrame.h
     };
     if (!collidesWithMap(yBox, map)) {
-        setPos(getPos().x, getPos().y += dy);
+        setPos(getPos().x, getPos().y + dy);
 		return;
     }
 }

@@ -48,13 +48,13 @@ void RenderWindow::render(Entity& p_entity)
     src.w = p_entity.getCurrentFrame().w;
     src.h = p_entity.getCurrentFrame().h;
 
-    SDL_Rect dst;
+    SDL_FRect dst;
     dst.x = p_entity.getPos().x;
     dst.y = p_entity.getPos().y;
     dst.w = p_entity.getCurrentFrame().w;
     dst.h = p_entity.getCurrentFrame().h;
 
-    SDL_RenderCopyEx(renderer, p_entity.getTex(), &src, &dst, p_entity.getAngle(), nullptr, SDL_FLIP_NONE);
+    SDL_RenderCopyExF(renderer, p_entity.getTex(), &src, &dst, p_entity.getAngle(), nullptr, SDL_FLIP_NONE);
 }
 
 void RenderWindow::display()
