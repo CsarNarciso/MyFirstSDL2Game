@@ -8,5 +8,6 @@ class Enemy : public MovableEntity
 {
 	public:
 		Enemy(RenderWindow* window);
-        void facePlayer(Vector2f playerPos);
+                void facePlayer(Vector2f playerPos);
+                void approachesPlayer();
 };
