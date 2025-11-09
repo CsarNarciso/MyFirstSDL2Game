@@ -18,5 +18,5 @@ class Entity
 		Vector2f pos;
 		SDL_Texture* tex;
 		SDL_FRect currentFrame;
-		float angle;
+		float angle = 0.0f;
 };

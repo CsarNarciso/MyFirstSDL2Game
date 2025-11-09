@@ -5,6 +5,7 @@
 
 #include "../include/entity/Entity.hpp"
 #include "../include/entity/Player.hpp"
+#include "../include/entity/Enemy.hpp"
 #include <../include/RenderWindow.hpp>
 #include "../include/Math.hpp"
 #include "../include/Map.hpp"
@@ -36,8 +37,10 @@ int main(int argc, char** args) {
 
 	// Declare Player
 	Player player(&window);
-
 	InputState input;
+
+	// Declare test enemy
+	Enemy enemy(&window);
 
 	//game loop
 	bool gameRunning = true;
@@ -96,6 +99,10 @@ int main(int argc, char** args) {
 		}
 		// Render player
 		window.render(player);
+
+		// Render enemy
+		enemy.facePlayer(player.getPos());
+		window.render(enemy);
 
 		// Draw
 		window.display();
