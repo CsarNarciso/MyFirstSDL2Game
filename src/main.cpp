@@ -7,6 +7,7 @@
 #include "../include/entity/Player.hpp"
 #include <../include/RenderWindow.hpp>
 #include "../include/Math.hpp"
+#include "../include/Direction.hpp"
 #include "../include/Map.hpp"
 #include "../include/Input.hpp"
 
@@ -86,6 +87,10 @@ int main(int argc, char** args) {
 		// Player movement
 		player.handlePlayerMovement(map, input);
 		
+		// Handle enemy updates
+		enemy.facePlayer(player.getPos());
+		enemy.move(Direction::UP, map);
+
 		// Clear
 		window.clear();
 			
@@ -97,6 +102,12 @@ int main(int argc, char** args) {
 		// Render player
 		window.render(player);
 
+<<<<<<< Updated upstream
+=======
+		// Render enemy
+		window.render(enemy);
+
+>>>>>>> Stashed changes
 		// Draw
 		window.display();
 	}
