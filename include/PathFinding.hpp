@@ -11,7 +11,11 @@ class PathFinding
         void compute();
         void getNeighbors(Node node, Map* map);
         int computeF();
+        std::vector<Node> getOpenList();
+        std::vector<Node> getClosedList();
     private:
+        std::vector<Node> openList;
+        std::vector<Node> closedList;
 };
 
 
