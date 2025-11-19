@@ -1,8 +1,8 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-
 #include <vector>
+#include <unordered_map>
 
 #include "../include/Map.hpp"
 
@@ -10,6 +10,11 @@
 
 PathFinding::PathFinding() 
 {}
+
+bool isClosed(const NodeId& id) const
+{
+    return closedMap.find(id) != closedMap.end();
+}
 
 // Get neighbors
 
@@ -24,10 +29,10 @@ void PathFinding::getNeighbors(Node node, Map* map)
     int row = node.getId().row;
     int column = node.getId().column;
 
-    std::vector<Node> neighbors;
+    std::unordered_map<NodeId, Node, NodeIdHash> neighbors;
 
     // top
-    if (map->canMove(row - 1, column)) neighbors.push_back(Node(row - 1, column));
+    if (map->canMove(row - 1, column)) neighbors.insert(NodeId(row - 1, column), Node(row - 1, column));
     
     // down
     if (map->canMove(row + 1, column)) neighbors.push_back(Node(row + 1, column));
@@ -41,11 +46,9 @@ void PathFinding::getNeighbors(Node node, Map* map)
     // Filter neighbors already in closed list
     for (auto neighbor : neighbors)
     {
-        // THis is just not working because it needs pointers, no the object directly?
-        // How to do this task gaining the most performance possiblem?
-        if (std::find(closedList.begin(), closedList.end(), neighbor) != closedList.end())
+        if (isClosed(neighbor.id))
         {
-            closedList.erase();
+            neighbors.erase();
         }
     }
 }

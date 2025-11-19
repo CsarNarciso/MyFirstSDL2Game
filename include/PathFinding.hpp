@@ -1,6 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <unordered_map>
 
 #include "Map.hpp"
 
@@ -12,10 +13,10 @@ class PathFinding
         void getNeighbors(Node node, Map* map);
         int computeF();
         std::vector<Node> getOpenList();
-        std::vector<Node> getClosedList();
+        bool isClosed(const NodeId& id) const;
     private:
         std::vector<Node> openList;
-        std::vector<Node> closedList;
+        std::unordered_map<NodeId, Node, NodeIdHash> closedMap;
 };
 
 
@@ -40,4 +41,13 @@ struct NodeId
     :column(p_column), row(p_row)
     {}
     int column, row;
+    bool operator==(const NodeId& other) const noexcept {
+        return row == other.row && column == other.column;
+    }
+};
+
+struct NodeIdHash {
+    std::size_t operator()(const NodeId& id) const noexcept {
+        return std::hash<int>()(id.row) ^ (std::hash<int>()(id.column) << 1);
+    }
 };
