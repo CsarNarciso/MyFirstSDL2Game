@@ -14,6 +14,7 @@ class PathFinding
         int computeF();
         std::vector<Node> getOpenList();
         bool isClosed(const NodeId& id) const;
+        void generateNeigbor(int row, int column, std::unordered_map<NodeId, Node, NodeIdHash> neighbors, Map* map);
     private:
         std::vector<Node> openList;
         std::unordered_map<NodeId, Node, NodeIdHash> closedMap;

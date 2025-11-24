@@ -11,9 +11,18 @@
 PathFinding::PathFinding() 
 {}
 
-bool isClosed(const NodeId& id) const
+bool PathFinding::isClosed(const NodeId& id) const
 {
     return closedMap.find(id) != closedMap.end();
+}
+
+void PathFinding::generateNeigbor(int row, int column, std::unordered_map<NodeId, Node, NodeIdHash> neighbors, Map* map)
+{
+    // Create node
+    // Check if valid neighbor
+    // Add to rest of neighbors
+    Node node = Node(row, column);
+    if (map->canMove(row, column) && !isClosed(node.getId())) neighbors[node.getId()] = node;
 }
 
 // Get neighbors
@@ -32,25 +41,16 @@ void PathFinding::getNeighbors(Node node, Map* map)
     std::unordered_map<NodeId, Node, NodeIdHash> neighbors;
 
     // top
-    if (map->canMove(row - 1, column)) neighbors.insert(NodeId(row - 1, column), Node(row - 1, column));
-    
+    generateNeigbor(row - 1, column, neighbors, map);
+
     // down
-    if (map->canMove(row + 1, column)) neighbors.push_back(Node(row + 1, column));
+    generateNeigbor(row + 1, column, neighbors, map);
 
     // right
-    if (map->canMove(row, column + 1)) neighbors.push_back(Node(row, column + 1));
+    generateNeigbor(row, column + 1, neighbors, map);
 
     // left
-    if (map->canMove(row, column - 1)) neighbors.push_back(Node(row, column - 1));
-
-    // Filter neighbors already in closed list
-    for (auto neighbor : neighbors)
-    {
-        if (isClosed(neighbor.id))
-        {
-            neighbors.erase();
-        }
-    }
+    generateNeigbor(row, column - 1, neighbors, map);
 }
 
 Node::Node(int row, int column)
