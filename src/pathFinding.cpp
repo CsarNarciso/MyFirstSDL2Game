@@ -16,13 +16,13 @@ bool PathFinding::isClosed(const NodeId& id) const
     return closedMap.find(id) != closedMap.end();
 }
 
-void PathFinding::generateNeigbor(int row, int column, std::unordered_map<NodeId, Node, NodeIdHash> neighbors, Map* map)
+void PathFinding::generateNeigbor(int row, int column, std::unordered_map<NodeId, Node, NodeIdHash>& neighbors, Map map)
 {
     // Create node
     // Check if valid neighbor
     // Add to rest of neighbors
     Node node = Node(row, column);
-    if (map->canMove(row, column) && !isClosed(node.getId())) neighbors[node.getId()] = node;
+    if (map.canMove(row, column) && !isClosed(node.getId())) neighbors[node.getId()] = node;
 }
 
 // Get neighbors
@@ -33,7 +33,7 @@ void PathFinding::generateNeigbor(int row, int column, std::unordered_map<NodeId
 // Pick the one with lowest f
 // Move it from open to closed list
 
-void PathFinding::getNeighbors(Node node, Map* map)
+void PathFinding::getNeighbors(Node node, Map map)
 {
     int row = node.getId().row;
     int column = node.getId().column;
@@ -43,17 +43,42 @@ void PathFinding::getNeighbors(Node node, Map* map)
     // top
     generateNeigbor(row - 1, column, neighbors, map);
 
+    // top-left
+    generateNeigbor(row - 1, column - 1, neighbors, map);
+
+    // left
+    generateNeigbor(row, column - 1, neighbors, map);
+    
+    // left-down
+    generateNeigbor(row + 1, column - 1, neighbors, map);
+
     // down
     generateNeigbor(row + 1, column, neighbors, map);
+
+    // down-right
+    generateNeigbor(row + 1, column + 1, neighbors, map);
 
     // right
     generateNeigbor(row, column + 1, neighbors, map);
 
-    // left
-    generateNeigbor(row, column - 1, neighbors, map);
+    // right-top
+    generateNeigbor(row - 1, column + 1, neighbors, map);
+
+    // why when moving, it stops printing neigbhors!? they only appear when game opens, at start, just one time
+    std::cout << "Current node -> " << "Row: " << row << " Column: " << column << std::endl;
+    std::cout << "Neighbors: " << std::endl;
+    for(const auto& pair: neighbors)
+    {
+        std::cout << "Row: " << pair.first.row << " Column: " << pair.first.column << std::endl;
+    }
 }
 
 Node::Node(int row, int column)
 {
-    id = NodeId(row, column);
+    id = NodeId(column, row);
+}
+
+NodeId Node::getId()
+{
+    return id;
 }

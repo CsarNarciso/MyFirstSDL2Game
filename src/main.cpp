@@ -11,6 +11,7 @@
 #include "../include/Direction.hpp"
 #include "../include/Map.hpp"
 #include "../include/Input.hpp"
+#include "../include/PathFinding.hpp"
 
 
 int main(int argc, char** args) {
@@ -42,6 +43,9 @@ int main(int argc, char** args) {
 
 	// Declare test enemy
 	Enemy enemy(&window);
+
+	// PathFinding (test)
+	PathFinding pathFinding;
 
 	//game loop
 	bool gameRunning = true;
@@ -87,6 +91,9 @@ int main(int argc, char** args) {
 					break;
 			}
 		}
+		// Path finding. Neighbors.
+		pathFinding.getNeighbors(Node(player.getPos().y, player.getPos().x), map);
+
 		// Player movement
 		player.handlePlayerMovement(map, input);
 		
