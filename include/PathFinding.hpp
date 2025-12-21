@@ -9,9 +9,9 @@
 
 struct NodeId
 {
-    int column, row;
-    NodeId(): column(), row() {};
-    NodeId(int p_column, int p_row) :column(p_column), row(p_row) {};
+    int row, column;
+    NodeId(): row(), column() {};
+    NodeId(int p_row, int p_column) :row(p_row), column(p_column) {};
 
     // For hashing: to know how to identify a NodeId object from others quickly
     bool operator==(const NodeId& other) const noexcept {
@@ -29,18 +29,24 @@ struct Node
     Node() : id() {};
     Node(int row, int column);
     NodeId getId();
-    
+    void setTarget(Node& p_target);
+    int getH();
+    int h;
+    void compute();
+
     private:
         NodeId id;
+        Node* target = nullptr;
 };
 
 class PathFinding
 {
-    std::unordered_map<NodeId, Node, NodeIdHash> closedMap;
+    std::unordered_map<NodeId, Node, NodeIdHash> closedList;
+    std::unordered_map<NodeId, Node, NodeIdHash> openList;
     
     public:
         PathFinding();
-        void getNeighbors(Node node, Map map);
+        void getNeighbors(int y, int x, Map& map);
         bool isClosed(const NodeId& id) const;
-        void generateNeigbor(int row, int column, std::unordered_map<NodeId, Node, NodeIdHash>& neighbors, Map map);
+        void generateNeigbor(int row, int column, std::unordered_map<NodeId, Node, NodeIdHash>& neighbors, Map& map);
 };

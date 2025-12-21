@@ -92,7 +92,7 @@ int main(int argc, char** args) {
 			}
 		}
 		// Path finding. Neighbors.
-		pathFinding.getNeighbors(Node(player.getPos().y, player.getPos().x), map);
+		pathFinding.getNeighbors(player.getPos().y, player.getPos().x, map);
 
 		// Player movement
 		player.handlePlayerMovement(map, input);
