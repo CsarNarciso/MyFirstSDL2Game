@@ -8,161 +8,154 @@
 
 #include "../include/PathFinding.hpp"
 
-PathFinding::PathFinding() 
-{}
+PathFinding::PathFinding() {}
 
 bool PathFinding::isClosed(const NodeId& id) const
 {
     return closedList.find(id) != closedList.end();
 }
 
-void PathFinding::generateNeigbor(int row, int column, std::unordered_map<NodeId, Node, NodeIdHash>& neighbors, Map& map)
+std::vector<Node> PathFinding::getPath(int y, int x, int target_y, int target_x, Map& map)
 {
-    // Create node
-    // Check if valid neighbor
-    // Add to rest of neighbors
-    Node node = Node(row, column);
-    if (map.canMove(row, column) && !isClosed(node.getId())) neighbors[node.getId()] = node;
-}
+    // Reset lists (?)
+    openList.clear();
+    closedList.clear();
 
-// Get neighbors (no in closed list)
-
-// Check for updates if they are in open list already, if not in open list yet, compute them
-// Then add to open list
-
-// Pick the one with lowest f
-// Move it from open to closed list
-
-void PathFinding::getNeighbors(int y, int x, Map& map)
-{
-    int row = y / map.getTileSize();
-    int column = x / map.getTileSize();
-    Node playerNode = Node(row, column); // target for enemy nodes
-
-    std::unordered_map<NodeId, Node, NodeIdHash> neighbors;
-
-    // top
-    generateNeigbor(row - 1, column, neighbors, map);
-
-    // top-left
-    generateNeigbor(row - 1, column - 1, neighbors, map);
-
-    // left
-    generateNeigbor(row, column - 1, neighbors, map);
+    Node target = Node(target_y / map.getTileSize(), target_x / map.getTileSize(), NO_PARENT);
     
-    // left-down
-    generateNeigbor(row + 1, column - 1, neighbors, map);
+    // Start by starting point node
+    Node currentPosNode = Node(y / map.getTileSize(), x / map.getTileSize(), NO_PARENT);
+    currentPosNode.g = 0;
+    currentPosNode.h = computeH(currentPosNode.getId(), target.getId());
+    closedList[currentPosNode.getId()] = currentPosNode;
 
-    // down
-    generateNeigbor(row + 1, column, neighbors, map);
-
-    // down-right
-    generateNeigbor(row + 1, column + 1, neighbors, map);
-
-    // right
-    generateNeigbor(row, column + 1, neighbors, map);
-
-    // right-top
-    generateNeigbor(row - 1, column + 1, neighbors, map);
-
-    std::cout << "Current node -> " << "Row: " << row << " Column: " << column << std::endl;
-    std::cout << "Neighbors: " << std::endl;
-
-    for(const auto& pair: neighbors)
+    // Start loop till find final path to target
+    while (!(currentPosNode.getId() == target.getId()))
     {
-        NodeId nodeId = pair.first;
-        Node node = pair.second;
+        // Get current pos node neighbors
+        getNeighbors(&currentPosNode, &target, map);
 
-        // Test: set target
-        node.setTarget(playerNode);
+        if (openList.empty()) { // no path 
+            break; }
 
-        // Add each generated neighbor to open list
-        if(openList.find(nodeId) != openList.end())
+        // Pick lowest cost one
+        currentPosNode = openList.begin()->second;
+        for (std::pair<NodeId, Node> pair : openList)
         {
-            // (only if they not already in open list)
-
-            // then, first compute,
-            node.compute();
-
-            // then add
-            openList[nodeId] = node;
+            if (pair.second.getF() < currentPosNode.getF()){ currentPosNode = pair.second; }
         }
-        else
-        {
-            // if already in open list, re-compute
-            node.compute();
-            // and replace
-            openList[nodeId] = node;
-        }
-        std::cout << "Row: " << pair.first.row << " Column: " << pair.first.column << std::endl;
-        std::cout << "H: " << pair.second.h << std::endl;
+        // Move it from open to closed list
+        openList.erase(currentPosNode.getId());
+        closedList[currentPosNode.getId()] = currentPosNode;
+
+        std::cout << "||||||||||||" << currentPosNode.getF() << "|||||||||||||" << std::endl;
+        for (std::pair<NodeId, Node> pair : openList)
+		{
+			std::cout << "Row: " << pair.second.getId().row << " | Column: " << pair.second.getId().column << " (F) = " << pair.second.getF() << " --PARENT--> " << pair.second.getParentId().row << " | Column: " << pair.second.getParentId().column << std::endl; 
+		}
     }
-}
-
-Node::Node(int row, int column)
-{
-    id = NodeId(row, column);
-}
-
-NodeId Node::getId()
-{
-    return id;
-}
-
-void Node::setTarget(Node& p_target)
-{
-    target = &p_target;
-}
-
-int Node::getH()
-{
-    return h;
-}
-
-void Node::compute()
-{
-    int row = id.row;
-    int column = id.column;
-
-    int t_row = target->id.row;
-    int t_column = target->id.column;
     
-    // compute h (manhatan distance)
-    h = 0;
-
-    // Row
-    // no same row?
-    if (row != t_row)
-    {
-        // compute row
-
-        // higher?
-        if(row > t_row)
-        {
-            h = row - (t_row + 1);
-        }
-        else
-        {
-            // lower?
-            h = t_row - (row + 1);
-        }
-    }
-    // Column
-    // no same column?
-    if (column != t_column)
-    {
-        // compute column
-
-        // higher?
-        if(column > t_column)
-        {
-            h = column - (t_column + 1);
-        }
-        else
-        {
-            // lower?
-            h = t_column - (column + 1);
-        }
-    }
-    //g and f (?)
+    // Return closed list as path (fit better this to return exact path instead unnecesary nodes)
+    std::vector<Node> ordered_path;
+    // Node cn = closedList.begin()->second;
+    // // Start loop till find final path to target
+    // while (!(cn.getId() == target.getId()))
+    // {
+    //     for (std::pair<NodeId, Node> pair: closedList)
+    //     {
+    //         if (pair.second.getParent().getId() == ordered_path.end()->getId())
+    //         {
+    //             cn = pair.second;
+    //             ordered_path.push_back(pair.second);
+    //         }
+    //     }
+    // }
+    return ordered_path;
 }
+
+
+
+void PathFinding::getNeighbors(Node* parent, Node* target, Map& map)
+{
+    // For each possible neighbor side (laterals and diagonals)
+    for (std::pair<int, int> pair: neighborSides)
+    {
+        // side
+        NodeId id = NodeId(parent->getId().row + pair.first, parent->getId().column + pair.second);
+
+        // First check if valid neighbor before add to neighbors
+        if (map.canMove(id.row, id.column) && !isClosed(id))
+        {
+            // But first, if not in open list
+            if (openList.find(id) == openList.end())
+            {
+                // then generate it
+                Node node = Node(id.row, id.column, parent->getId());
+
+                // compute
+                node.h = computeH(node.getId(), target->getId());
+                node.g = computeG(node.getId(), *parent);
+
+                // and add to open list
+                openList[id] = node;
+            }
+            else
+            {
+                // If they in open list, 
+                Node node = openList[id];
+
+                // check for updates (lower g)
+                if (computeG(node.getId(), *parent) < node.getG())
+                {    
+                    // re-compute
+                    node.parentId = parent->getId();
+                    node.h = computeH(node.getId(), target->getId());
+                    node.g = computeG(node.getId(), *parent);
+
+                    // Then re-add (replace) on open list
+                    openList[id] = node;
+                }
+            }
+        }
+    }
+}
+
+int PathFinding::computeH(NodeId nodeId, NodeId targetId)
+{
+    int row = nodeId.row;
+    int column = nodeId.column;
+
+    int t_row = targetId.row;
+    int t_column = targetId.column;
+    
+    // Manhattan distance (h)
+    return std::abs(row - t_row) + std::abs(column - t_column);
+}
+
+
+int PathFinding::computeG(NodeId nodeId, const Node& parent)
+{
+    int row = nodeId.row;
+    int column = nodeId.column;
+    
+    // Is lateral or diagonal neighbor?
+    return parent.getG() + ((row == parent.getId().row || column == parent.getId().column) ? 10 : 14);
+}
+
+
+
+Node::Node(int row, int column, NodeId p_parentId) : id(row, column), parentId(p_parentId), h(0), g(0), f(0) {}
+
+NodeId::NodeId() : row(), column() {};
+
+NodeId::NodeId(int p_row, int p_column) :row(p_row), column(p_column) {};
+
+NodeId Node::getId() const { return id; }
+
+int Node::getH(){ return h; }
+
+int Node::getG() const { return g; }
+
+int Node::getF(){ return h + g;; }
+
+NodeId Node::getParentId(){ return parentId; }

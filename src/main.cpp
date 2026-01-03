@@ -91,9 +91,7 @@ int main(int argc, char** args) {
 					break;
 			}
 		}
-		// Path finding. Neighbors.
-		pathFinding.getNeighbors(player.getPos().y, player.getPos().x, map);
-
+		
 		// Player movement
 		player.handlePlayerMovement(map, input);
 		
@@ -117,6 +115,13 @@ int main(int argc, char** args) {
 
 		// Draw
 		window.display();
+
+		// Path finding.
+		std::vector<Node> path = pathFinding.getPath(enemy.getPos().y, enemy.getPos().x, player.getPos().y, player.getPos().x, map);
+		// for (Node node : path)
+		// {
+		// 	std::cout << "Row: " << node.getId().row << " | Column: " << node.getId().column << std::endl; 
+		// }
 	}
 	
 	//destroy window and shutdown SDL

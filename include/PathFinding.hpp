@@ -10,8 +10,8 @@
 struct NodeId
 {
     int row, column;
-    NodeId(): row(), column() {};
-    NodeId(int p_row, int p_column) :row(p_row), column(p_column) {};
+    NodeId();
+    NodeId(int row, int column);
 
     // For hashing: to know how to identify a NodeId object from others quickly
     bool operator==(const NodeId& other) const noexcept {
@@ -24,29 +24,46 @@ struct NodeIdHash {
     }
 };
 
+const NodeId NO_PARENT = {-1, -1};
+
 struct Node
 {
     Node() : id() {};
-    Node(int row, int column);
-    NodeId getId();
-    void setTarget(Node& p_target);
+    Node(int row, int column, NodeId parentId);
+    NodeId getId() const;
+    NodeId getParentId();
     int getH();
+    int getG() const;
+    int getF();
     int h;
-    void compute();
+    int g;
+    int f;
+    NodeId parentId;
 
     private:
         NodeId id;
-        Node* target = nullptr;
 };
 
 class PathFinding
 {
     std::unordered_map<NodeId, Node, NodeIdHash> closedList;
     std::unordered_map<NodeId, Node, NodeIdHash> openList;
+    std::vector<std::pair<int,int>> neighborSides = { 
+        {-1, 0}, // up 
+        {-1, -1}, // up-left 
+        {0, -1}, // left 
+        {1, -1}, // down-left 
+        {1, 0}, // down 
+        {1, 1}, // down-right 
+        {0, 1}, // right 
+        {-1, 1} // up-right 
+    };
     
     public:
         PathFinding();
-        void getNeighbors(int y, int x, Map& map);
+        std::vector<Node> getPath(int y, int x, int target_y, int target_x, Map& map);
+        void getNeighbors(Node* parent, Node* target, Map& map);
         bool isClosed(const NodeId& id) const;
-        void generateNeigbor(int row, int column, std::unordered_map<NodeId, Node, NodeIdHash>& neighbors, Map& map);
+        int computeH(NodeId nodeId, NodeId targetId);
+        int computeG(NodeId nodeId, const Node& parent);
 };
