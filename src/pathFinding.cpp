@@ -3,6 +3,7 @@
 #include <SDL2/SDL_image.h>
 #include <vector>
 #include <unordered_map>
+#include <algorithm>
 
 #include "../include/Map.hpp"
 
@@ -21,12 +22,13 @@ std::vector<Node> PathFinding::getPath(int y, int x, int target_y, int target_x,
     openList.clear();
     closedList.clear();
 
+    // Define target and starting point nodes
     Node target = Node(target_y / map.getTileSize(), target_x / map.getTileSize(), NO_PARENT);
-    
-    // Start by starting point node
-    Node currentPosNode = Node(y / map.getTileSize(), x / map.getTileSize(), NO_PARENT);
-    currentPosNode.g = 0;
-    currentPosNode.h = computeH(currentPosNode.getId(), target.getId());
+    Node startingPointNode = Node(y / map.getTileSize(), x / map.getTileSize(), NO_PARENT);
+    startingPointNode.g = 0;
+    startingPointNode.h = computeH(startingPointNode.getId(), target.getId());
+
+    Node currentPosNode = startingPointNode;
     closedList[currentPosNode.getId()] = currentPosNode;
 
     // Start loop till find final path to target
@@ -47,29 +49,26 @@ std::vector<Node> PathFinding::getPath(int y, int x, int target_y, int target_x,
         // Move it from open to closed list
         openList.erase(currentPosNode.getId());
         closedList[currentPosNode.getId()] = currentPosNode;
-
-        std::cout << "||||||||||||" << currentPosNode.getF() << "|||||||||||||" << std::endl;
-        for (std::pair<NodeId, Node> pair : openList)
-		{
-			std::cout << "Row: " << pair.second.getId().row << " | Column: " << pair.second.getId().column << " (F) = " << pair.second.getF() << " --PARENT--> " << pair.second.getParentId().row << " | Column: " << pair.second.getParentId().column << std::endl; 
-		}
     }
     
-    // Return closed list as path (fit better this to return exact path instead unnecesary nodes)
+    // Return final ordered path
+    
+    // First, get computed target
     std::vector<Node> ordered_path;
-    // Node cn = closedList.begin()->second;
-    // // Start loop till find final path to target
-    // while (!(cn.getId() == target.getId()))
-    // {
-    //     for (std::pair<NodeId, Node> pair: closedList)
-    //     {
-    //         if (pair.second.getParent().getId() == ordered_path.end()->getId())
-    //         {
-    //             cn = pair.second;
-    //             ordered_path.push_back(pair.second);
-    //         }
-    //     }
-    // }
+    Node current = closedList[target.getId()];
+    ordered_path.push_back(current);
+
+    // Loop
+    while (!(current.getParentId() == NO_PARENT)) // till reach start node
+    {
+        // Get current node parent
+        current = closedList[current.getParentId()];
+        // Add to ordered list
+        ordered_path.push_back(current);
+        // And loop again, to find parent of this parent...
+    }         
+    // Order in reverse (start to target)
+    std::reverse(ordered_path.begin(), ordered_path.end());
     return ordered_path;
 }
 

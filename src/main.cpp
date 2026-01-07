@@ -11,7 +11,6 @@
 #include "../include/Direction.hpp"
 #include "../include/Map.hpp"
 #include "../include/Input.hpp"
-#include "../include/PathFinding.hpp"
 
 
 int main(int argc, char** args) {
@@ -43,9 +42,6 @@ int main(int argc, char** args) {
 
 	// Declare test enemy
 	Enemy enemy(&window);
-
-	// PathFinding (test)
-	PathFinding pathFinding;
 
 	//game loop
 	bool gameRunning = true;
@@ -115,13 +111,6 @@ int main(int argc, char** args) {
 
 		// Draw
 		window.display();
-
-		// Path finding.
-		std::vector<Node> path = pathFinding.getPath(enemy.getPos().y, enemy.getPos().x, player.getPos().y, player.getPos().x, map);
-		// for (Node node : path)
-		// {
-		// 	std::cout << "Row: " << node.getId().row << " | Column: " << node.getId().column << std::endl; 
-		// }
 	}
 	
 	//destroy window and shutdown SDL
